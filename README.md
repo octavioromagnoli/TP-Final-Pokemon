@@ -1,2 +1,2 @@
 # TP-Final-Pokemon
-Romagnoli, Salmain, Fassio Naiman
+Romagnoli, Salmain, Fassio, Naiman
