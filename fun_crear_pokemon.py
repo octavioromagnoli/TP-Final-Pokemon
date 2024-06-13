@@ -1,8 +1,6 @@
 import pandas as pd 
 import numpy as np
-
-pokemon_df = pd.read_csv('data/pokemons.csv')
-moves_df = pd.read_csv('data/moves.csv')
+from utils.pokemon import Pokemon
 
 def create_pokemon_data(pokemon_df, nombre_pokemon: str)-> dict:
     '''
@@ -41,9 +39,9 @@ def create_pokemon_data(pokemon_df, nombre_pokemon: str)-> dict:
     if pokemon_dicc['type2'] == 0:
         pokemon_dicc['type2'] = ''
 
-    return pokemon_dicc
+    pokemon_dicc['is_legendary']=bool(pokemon_dicc['is_legendary'])
 
-print(create_pokemon_data(pokemon_df, "Rattata"))
+    return pokemon_dicc
 
 def lista_de_nombres(pokemon_df) -> list:
     """
@@ -83,10 +81,6 @@ def df_to_dictionary(file) -> dict:
         dic[i]=file.iloc[j:j+1,1:].to_dict('records')[0] #el cero agarra el unico elemnto de la lista
     return dic
 
-effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
-
-#print(create_dics(effectivenes_df))
-
 def pokediccionario(pokemon_df, moves_df) -> dict:
     """
     Crea un diccionario con datos y movimientos de Pokemones.
@@ -118,4 +112,23 @@ def pokediccionario(pokemon_df, moves_df) -> dict:
         poke_diccionario[poke_nombre] = {'data': poke_data, 'moves': {i:poke_moves[i] for i in poke_data['moves']}} #en  moves va la funcion que falta
     return poke_diccionario
 
-print(pokediccionario(pokemon_df, moves_df)['Bulbasaur'])
+def lista_pokemones(dicc_de_pokemones: dict) -> list[Pokemon]:
+    '''
+    Crea una lista con todos los pokemones como objetos.
+    Esta funcion toma un diccionario que contiene informacion sobre diferentes pokemones y
+    crea una lista de objetos de la clase `Pokemon` a partir de dicha informacion. Cada entrada
+    en el diccionario representa un pokemon con sus datos y movimientos correspondientes.
+    Argumentos:
+        dicc_de_pokemones (dict): Un diccionario donde las claves son los nombres de los pokemones y
+                                  los valores son otros diccionarios con dos claves:
+                                  - 'data': Informacion del pokemon (p.ej. estadisticas, tipo).
+                                  - 'moves': Lista de movimientos que el pokemon puede aprender.
+    Devuelve:
+        list[Pokemon]: Una lista de objetos `Pokemon` creados a partir de la informacion del diccionario.
+    '''
+    lista_de_pokemones = []
+    for nombre in dicc_de_pokemones:
+        #Crea un pokemon y lo mete en la lista de pokemones
+        poke=Pokemon.from_dict(nombre, dicc_de_pokemones[nombre]['data'], dicc_de_pokemones[nombre]['moves'])
+        lista_de_pokemones.append(poke)
+    return lista_de_pokemones
