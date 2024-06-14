@@ -18,17 +18,6 @@ lista_de_pokemones = lista_pokemones(dicc_de_pokemones)
 
 dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
-
-equipos_prueba = []
-for i in range(2):
-    equipo=[]
-    while len(equipo)<6:
-        pokemon = random.choice(lista_de_pokemones)
-        if pokemon not in equipo and pokemon.is_legendary==False:
-            equipo.append(pokemon) 
-    starter = random.randint(0,5)
-    equipos_prueba.append(Team("Team " + str(i + 1), equipo, starter))
-
 def aptitud_del_equipo(equipo_actual: object, lista_contrincantes: list, dicc_effectiveness: dict)->float:
     '''
     Simula la batalla entre el pokemon que se le da y todos los equipos en lista_contrincantes
@@ -81,7 +70,6 @@ def add_probabilidad(dic_poke_y_apt: dict):
         dic_poke_y_apt[equipo]['probability'] = dic_poke_y_apt[equipo]['aptitud'] / apt_total
     return dic_poke_y_apt
 
-
 def select_equipos_padres(lista_de_equipos, lista_de_probabilidades)-> list:
     '''
     Elije dos padres (distintos) segun sus probabilidades asignadas.
@@ -109,7 +97,7 @@ def get_total_stats(pokemon)->int:
     """
     return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
 
-def cruces(equipo_1, equipo_2, lista_pokemones) -> tuple[list, int]:
+def cruces(equipo_1, equipo_2, lista_pokemones, pokedex) -> tuple[list, int]:
     '''
     Esta funcion agarra dos equipos y los cruza, pokemon por pokemon y el que tiene mas estadisticas en total
     se agrega a un nuevo equipo formado por pokemones mas fuertes, asi con todos
@@ -119,27 +107,45 @@ def cruces(equipo_1, equipo_2, lista_pokemones) -> tuple[list, int]:
         lista_hijos: Una lista con objetos pokemon
     '''
     lista_hijos=[]
+    print('')
+    print('Cruces:')
     for i in range(len(equipo_1.pokemons)):
         mute=random.random()
+
+        print(f"cruce {i+1} - mute: {'si' if mute<0.03 else 'no'}")
+
         if mute>0.03:
             stats1 = get_total_stats(equipo_1.pokemons[i])
             stats2 = get_total_stats(equipo_2.pokemons[i])
             if stats1 > stats2:
-                if equipo_1.pokemons[i] not in lista_hijos:
-                    lista_hijos.append(equipo_1.pokemons[i])
+                if equipo_1.pokemons[i].name not in lista_hijos:
+                    lista_hijos.append(equipo_1.pokemons[i].name)
                 else:
-                    lista_hijos.append(equipo_2.pokemons[i])
+                    lista_hijos.append(equipo_2.pokemons[i].name)
             else: 
-                if equipo_2.pokemons[i] not in lista_hijos:
-                    lista_hijos.append(equipo_2.pokemons[i])
+                if equipo_2.pokemons[i].name not in lista_hijos:
+                    lista_hijos.append(equipo_2.pokemons[i].name)
                 else:
-                    lista_hijos.append(equipo_1.pokemons[i])
+                    lista_hijos.append(equipo_1.pokemons[i].name)
         else:
             while True:
                 hijo = random.choice(lista_pokemones)
                 if hijo not in lista_hijos and hijo.is_legendary==False:
-                    lista_hijos.append(hijo)
+                    lista_hijos.append(hijo.name)
                     break   
+    
+    for i in range(len(lista_hijos)):
+        '''reemplaza el nombre en la lista_hijos por el objeto del pokemon que le corresponde
+        Para hacerlo toma (del diccionario con pokemones y su data) el pokedex number del pokemon
+        y reemplaza con el objeto en el indice de la lista de pokemones como objeto. 
+        '''
+        lista_hijos[i]=lista_de_pokemones[pokedex[lista_hijos[i]]['data']['pokedex_number']-1]
+    
+    print('')
+    print('hijo:')
+    for j in lista_hijos:
+        print(j.name)
+
     starter_1 = equipo_1.current_pokemon_index
     starter_2 = equipo_2.current_pokemon_index
     if equipo_1.pokemons[starter_1] == lista_hijos[starter_1]:
@@ -147,20 +153,3 @@ def cruces(equipo_1, equipo_2, lista_pokemones) -> tuple[list, int]:
     else:
         starter_nuevo=starter_2
     return lista_hijos, starter_nuevo
-
-print("Equipo prueba 0: \n")
-for i in equipos_prueba[0].pokemons:
-    print(i.name)
-print('-'*30)
-print("Equipo prueba 1: \n")
-for i in equipos_prueba[1].pokemons:
-    print(i.name)
-print('-'*30)
-print("Equipo nuevo: \n")
-hijos, starter = cruces(equipos_prueba[0], equipos_prueba[1], lista_de_pokemones)
-for i in hijos:
-    print(i.name)
-
-print(equipos_prueba[0].current_pokemon_index)
-print(equipos_prueba[1].current_pokemon_index)
-print(starter)

@@ -3,7 +3,6 @@ import pandas as pd
 import random
 from utils.team import Team
 
-
 def crear_primera_gen(lista_de_pokemones: list) -> list:
     '''
     Crea una lista con los equipos de pokemones de la primera generacion.
@@ -25,7 +24,6 @@ def crear_primera_gen(lista_de_pokemones: list) -> list:
         starter = random.randint(0,5)
         equipos_iniciales.append(Team("Team " + str(i+1), equipo, starter))
     return equipos_iniciales
-
 
 def contrincantes_ronda(lista_de_pokemones: list) -> list:
     '''
