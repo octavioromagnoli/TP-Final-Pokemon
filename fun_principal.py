@@ -3,6 +3,7 @@ import pandas as pd
 import random
 from utils.team import Team
 
+
 def crear_primera_gen(lista_de_pokemones: list) -> list:
     '''
     Crea una lista con los equipos de pokemones de la primera generacion.
@@ -26,7 +27,16 @@ def crear_primera_gen(lista_de_pokemones: list) -> list:
     return equipos_iniciales
 
 
-def contrincantes_ronda(lista_de_pokemones):
+def contrincantes_ronda(lista_de_pokemones: list) -> list:
+    '''
+    Esta funcion recibe una lista de pokemones, y los va agregando a equipos(sin legendarios, y sin repetir), hasta
+    que estos llegan a una cantidad de 6 pokemones. Elige una posicion del 1 al 5 para decidir quien es el starter
+    Esto se repite 400 veces y los equipos generados se agregan a una lista --> equipos_contrincantes[]
+    Argumentos:
+        list: lista_de_pokemones
+    Devuelve:
+        list: equipos_contrincantes
+    '''
     equipos_contrincantes=[]
     for i in range(400):
         equipo=[]
@@ -37,3 +47,7 @@ def contrincantes_ronda(lista_de_pokemones):
         starter = random.randint(0,5)
         equipos_contrincantes.append(Team("Team " + str(i+1), equipo, starter))
     return equipos_contrincantes
+
+def equipo_post_cruza(equipo_nuevo: list[object], starter: int, contador:int, contador_gen: int)->object:
+    equipo_armado = Team("Team E"+str(contador_gen)+" "+ str(contador), equipo_nuevo, starter)
+    return equipo_armado

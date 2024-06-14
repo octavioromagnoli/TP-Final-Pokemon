@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
 import random
+from tqdm import tqdm
 from fun_crear_pokemon import lista_pokemones, pokediccionario, df_to_dictionary
 from fun_principal import crear_primera_gen, contrincantes_ronda
 from utils.team import Team
+from utils.pokemon import Pokemon
 from utils.combat import __fight__, get_winner
 
 pokemon_df = pd.read_csv('data/pokemons.csv')
@@ -22,7 +24,7 @@ for i in range(2):
     equipo=[]
     while len(equipo)<6:
         pokemon = random.choice(lista_de_pokemones)
-        if pokemon not in equipo:
+        if pokemon not in equipo and pokemon.is_legendary==False:
             equipo.append(pokemon) 
     starter = random.randint(0,5)
     equipos_prueba.append(Team("Team " + str(i + 1), equipo, starter))
@@ -57,8 +59,8 @@ def dicc_apt(lista_de_equipos: list, lista_contrincantes: list, dicc_effectivene
         diccionario con los nombres de los equipos como clave, y la aptitud y el objeto equipo como valor 
     '''
     dic={}
-    for equipo in lista_de_equipos:
-        dic[equipo.name]={'aptitud':aptitud_del_equipo(equipo, lista_contrincantes, dicc_effectiveness), 'eq_obj': equipo}
+    for equipo in tqdm(range(len(lista_de_equipos)), desc='Calculating', unit=' iteration', colour='Yellow'):
+        dic[lista_de_equipos[equipo].name]={'aptitud':aptitud_del_equipo(lista_de_equipos[equipo], lista_contrincantes, dicc_effectiveness), 'eq_obj': lista_de_equipos[equipo]}
     return dic
 
 
@@ -74,32 +76,91 @@ def add_probabilidad(dic_poke_y_apt: dict):
     #La probabilidad que tengan depende de su aptitud, porque se calcula como aptitud / suma total de aptitudes
     apt_total = 0
     for equipo in dic_poke_y_apt:
-        apt_total += equipo['aptitud']
+        apt_total += dic_poke_y_apt[equipo]['aptitud']
     for equipo in dic_poke_y_apt:
-        equipo['probability'] = equipo['aptitud'] / apt_total
+        dic_poke_y_apt[equipo]['probability'] = dic_poke_y_apt[equipo]['aptitud'] / apt_total
     return dic_poke_y_apt
-    
-#lista_de_equipos = dic_con_prob.keys()
-#lista_de_probabilidades = []
 
-personas = ['Octa', 'Luca', 'Mati']
-probs = [0.6, 0.3, 0.1]
 
 def select_equipos_padres(lista_de_equipos, lista_de_probabilidades)-> list:
     '''
+    Elije dos padres (distintos) segun sus probabilidades asignadas.
+    Argumentos:
+        lista_de_equipos : lista con los nombres de todos los equipos
+        lista_de_probabilidades : lista con las probabilidades que tiene cada equipo de ser elegido como padre.
+                                IMPORTANTE las listas estan en el orden que corresponden, el primer valor de probabilidades es el 
+                                correspondiente al primer equipo y asi sucesivamente
+    Devuelve:
+        lista con los nombres de los equipos seleccionados como padres
     '''
+    #choices toma: una lista de la que selecciona  el resultado, una lista con los weights (probabilidades) que le corresponden 
+    #a cada elemento de la primera y la cantidad de selecciones que debe hacer (k)
     padres_elegidos = random.choices(lista_de_equipos, lista_de_probabilidades, k=2)
+    #si estan repetidos vuelve a elegir
+    while padres_elegidos[0] == padres_elegidos[1]:
+        padres_elegidos = random.choices(lista_de_equipos, lista_de_probabilidades, k=2)
     return padres_elegidos
-'''
-padres = (select_equipos_padres(personas, probs))
-print(padres)
 
+def get_total_stats(pokemon)->int: 
+    """
+    Suma todas las estadisticas que queremos del pokemon
+    Devuelve:
+    int: Suma de estadisticas.
+    """
+    return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
 
+def cruces(equipo_1, equipo_2, lista_pokemones) -> tuple[list, int]:
+    '''
+    Esta funcion agarra dos equipos y los cruza, pokemon por pokemon y el que tiene mas estadisticas en total
+    se agrega a un nuevo equipo formado por pokemones mas fuertes, asi con todos
+    Argumentos:
+        equipo_1, equipo_2: dos equipos que se cruzan y una lista_pokemones
+    Devuelve: 
+        lista_hijos: Una lista con objetos pokemon
+    '''
+    lista_hijos=[]
+    for i in range(len(equipo_1.pokemons)):
+        mute=random.random()
+        if mute>0.03:
+            stats1 = get_total_stats(equipo_1.pokemons[i])
+            stats2 = get_total_stats(equipo_2.pokemons[i])
+            if stats1 > stats2:
+                if equipo_1.pokemons[i] not in lista_hijos:
+                    lista_hijos.append(equipo_1.pokemons[i])
+                else:
+                    lista_hijos.append(equipo_2.pokemons[i])
+            else: 
+                if equipo_2.pokemons[i] not in lista_hijos:
+                    lista_hijos.append(equipo_2.pokemons[i])
+                else:
+                    lista_hijos.append(equipo_1.pokemons[i])
+        else:
+            while True:
+                hijo = random.choice(lista_pokemones)
+                if hijo not in lista_hijos and hijo.is_legendary==False:
+                    lista_hijos.append(hijo)
+                    break   
+    starter_1 = equipo_1.current_pokemon_index
+    starter_2 = equipo_2.current_pokemon_index
+    if equipo_1.pokemons[starter_1] == lista_hijos[starter_1]:
+        starter_nuevo=starter_1
+    else:
+        starter_nuevo=starter_2
+    return lista_hijos, starter_nuevo
 
+print("Equipo prueba 0: \n")
+for i in equipos_prueba[0].pokemons:
+    print(i.name)
+print('-'*30)
+print("Equipo prueba 1: \n")
+for i in equipos_prueba[1].pokemons:
+    print(i.name)
+print('-'*30)
+print("Equipo nuevo: \n")
+hijos, starter = cruces(equipos_prueba[0], equipos_prueba[1], lista_de_pokemones)
+for i in hijos:
+    print(i.name)
 
-
-def cruce_5050(t1,t2)
-    ch=
-'''
-
-
+print(equipos_prueba[0].current_pokemon_index)
+print(equipos_prueba[1].current_pokemon_index)
+print(starter)
