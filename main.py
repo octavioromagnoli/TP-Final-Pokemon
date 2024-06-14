@@ -3,7 +3,7 @@ import pandas as pd
 import random
 from fun_crear_pokemon import pokediccionario, lista_pokemones, df_to_dictionary
 from fun_principal import crear_primera_gen, contrincantes_ronda, equipo_post_cruza
-from hacer_combate import dicc_apt, add_probabilidad, select_equipos_padres, cruces
+from hacer_combate import dicc_apt, add_probabilidad, select_equipos_padres, cruces, mejor_equipo
 
 def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectiveness: dict, epoca:int, lista_de_pokemones, pokedex) -> list:
     dicc_de_apt=dicc_apt(gen_actual, contrincantes_gen, dicc_effectiveness)
@@ -68,23 +68,16 @@ def main():
 
     dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
-    conts=contrincantes_ronda(lista_de_pokemones)
+    for epoca in range(50):
+        conts=contrincantes_ronda(lista_de_pokemones)
+        gen_actual=simular_generacion(gen_actual, conts, dicc_effectiveness, epoca, lista_de_pokemones, dicc_de_pokemones)
 
-    second_gen=simular_generacion(gen_actual, conts, dicc_effectiveness, 1, lista_de_pokemones, dicc_de_pokemones)
-
-    print(second_gen)
+    cont_prueba_final = contrincantes_ronda(lista_de_pokemones)
+    equipo_definitivo = mejor_equipo(gen_actual, cont_prueba_final, dicc_effectiveness)
+    print("Este es el mejor equipo")
+    pokedefinitivos = equipo_definitivo.pokemons
+    for i in pokedefinitivos:
+        print(f'{i.name}')
+    print(gen_actual)
 
 main()
-    
-    
-    
-    
-'''for i in gen_actual:
-        print(f'{i.name}\n {[p for p in i.pokemons]} \n--------------------------\n')
-
-    for i in generacion_terminada:
-        print(f'{i.name}\n')
-        lista_print = [p for p in i.pokemons]
-        for a, j in enumerate(lista_print):
-            print(f'{a+1}. {j.name}')
-        print('---------------------------------------')'''

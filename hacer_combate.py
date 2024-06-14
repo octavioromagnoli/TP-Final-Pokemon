@@ -98,6 +98,7 @@ def get_total_stats(pokemon)->int:
     return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
 
 def cruces(equipo_1, equipo_2, lista_pokemones, pokedex) -> tuple[list, int]:
+    #hay que arreglar esto
     '''
     Esta funcion agarra dos equipos y los cruza, pokemon por pokemon y el que tiene mas estadisticas en total
     se agrega a un nuevo equipo formado por pokemones mas fuertes, asi con todos
@@ -153,3 +154,32 @@ def cruces(equipo_1, equipo_2, lista_pokemones, pokedex) -> tuple[list, int]:
     else:
         starter_nuevo=starter_2
     return lista_hijos, starter_nuevo
+
+    
+def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness):
+    diccionario_con_aptitudes = dicc_apt(lista_equipos, contrincantes, dicc_effectiveness)
+    actual = 0
+    ganador = ''
+    for nombre_equipo in diccionario_con_aptitudes:
+        if diccionario_con_aptitudes[nombre_equipo]['aptitud'] > actual:
+            ganador = diccionario_con_aptitudes[nombre_equipo]['eq_obj']
+    return ganador
+
+def test_team():
+    pokemon_df = pd.read_csv('data/pokemons.csv')
+    moves_df = pd.read_csv('data/moves.csv')
+    effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
+    dicc_effectiveness = df_to_dictionary(effectivenes_df)
+    pokedex=pokediccionario(pokemon_df, moves_df)
+    pokemones=lista_pokemones(pokedex)
+    aaaaa=['Tyranitar','Garchomp','Slaking','Dragonite','Salamence','Greninja']
+    for i in range(len(aaaaa)):
+        aaaaa[i]=pokemones[pokedex[aaaaa[i]]['data']['pokedex_number']-1]
+    bbbbb=['Weavile', 'Spiritomb', 'Honchkrow', 'Umbreon', 'Houndoom', 'Absol']
+    for i in range(len(bbbbb)):
+        bbbbb[i]=pokemones[pokedex[bbbbb[i]]['data']['pokedex_number']-1]
+    for i in range(6):
+        aaa=Team('aaa',aaaaa,i)
+        bbb=Team('bbb',bbbbb,0)
+        ganador=get_winner(aaa, bbb, dicc_effectiveness)
+        print(f'starter de nuestro equipo: {aaa.pokemons[i].name}\n batalla {i+1}: {"ganamo :)" if ganador.name==aaa.name else "perdimo :("}')
