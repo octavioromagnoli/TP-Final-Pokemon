@@ -97,26 +97,30 @@ def get_total_stats(pokemon)->int:
     """
     return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
 
-def cruces(equipo_1, equipo_2, lista_pokemones, pokedex) -> tuple[list, int]:
-    hijos=[]
-    ref_hijos=[]
+def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon]) -> tuple[list, int]:
+    hijos=[] #lista retornada
+    ref_hijos=[] #lista de referencia
     for i in range(len(equipo_1.pokemons)):
         action=random.random()
-        if action<0.03:
+        if action<0.03: #prob de mutar: 3%
             while True:
-                hijo=random.choice(lista_de_pokemones)
+                hijo=random.choice(lista_pokemones) #elige poke al azar y chequea hasta que no este ya en la lista o no sea legendario
                 if hijo.name not in ref_hijos and hijo.is_legendary==False:    
                     break
-        elif action<0.515:
+        elif action<0.515: #prob de elegir el del equipo 1: 48,5%
             hijo=equipo_1.pokemons[i]
-            if hijo.name not in ref_hijos and hijo.is_legendary==False:
-                hijo=equipo_2.pokemons[i]
-        else:
+            if hijo.name in ref_hijos:      #si el pokemon del equipo 1 ya esta en la lista
+                hijo=equipo_2.pokemons[i]   #cambia el elegido al otro
+        else: #prob de elegir el del equipo 2: 48,5%
             hijo=equipo_2.pokemons[i]
-            if hijo.name not in ref_hijos and hijo.is_legendary==False:
-                hijo=equipo_1.pokemons[i]
+            if hijo.name in ref_hijos:      #si el pokemon del equipo 1 ya esta en la lista
+                hijo=equipo_1.pokemons[i]   #cambia el elegido al otro
+
+        #agrega el hijo a la lista resultado y el nombre a la referencia
         hijos.append(hijo)
         ref_hijos.append(hijo.name)
+
+    #elige el starter del nuevo equipo 
     starter_1 = equipo_1.current_pokemon_index
     starter_2 = equipo_2.current_pokemon_index
     if equipo_1.pokemons[starter_1] == hijos[starter_1]:
@@ -134,21 +138,25 @@ def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness):
             ganador = diccionario_con_aptitudes[nombre_equipo]['eq_obj']
     return ganador
 
-def test_team():
+def test_team(): 
+    #Funcion inecesaria
     pokemon_df = pd.read_csv('data/pokemons.csv')
     moves_df = pd.read_csv('data/moves.csv')
     effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
     dicc_effectiveness = df_to_dictionary(effectivenes_df)
     pokedex=pokediccionario(pokemon_df, moves_df)
     pokemones=lista_pokemones(pokedex)
-    aaaaa=['Tyranitar','Garchomp','Slaking','Dragonite','Salamence','Greninja']
+    aaaaa=['Charizard','Murkrow','Metagross','Dewpider','Heracross','Tsareena']
+    starter=2
     for i in range(len(aaaaa)):
         aaaaa[i]=pokemones[pokedex[aaaaa[i]]['data']['pokedex_number']-1]
     bbbbb=['Weavile', 'Spiritomb', 'Honchkrow', 'Umbreon', 'Houndoom', 'Absol']
     for i in range(len(bbbbb)):
         bbbbb[i]=pokemones[pokedex[bbbbb[i]]['data']['pokedex_number']-1]
     for i in range(6):
-        aaa=Team('aaa',aaaaa,i)
-        bbb=Team('bbb',bbbbb,0)
+        aaa=Team('aaa',aaaaa,starter)
+        bbb=Team('bbb',bbbbb,i)
         ganador=get_winner(aaa, bbb, dicc_effectiveness)
-        print(f'starter de nuestro equipo: {aaa.pokemons[i].name}\n batalla {i+1}: {"ganamo :)" if ganador.name==aaa.name else "perdimo :("}')
+        print(f'starter del rival: {i}\nbatalla {i+1}: {"ganamo :)" if ganador.name==aaa.name else "perdimo :("}')
+
+#test_team()

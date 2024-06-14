@@ -7,10 +7,8 @@ from hacer_combate import dicc_apt, add_probabilidad, select_equipos_padres, cru
 
 def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectiveness: dict, epoca:int, lista_de_pokemones, pokedex) -> list:
     dicc_de_apt=dicc_apt(gen_actual, contrincantes_gen, dicc_effectiveness)
-    #print(' dic apt hecho ')
-    #print(dicc_de_apt)
+
     dicc_con_prob = add_probabilidad(dicc_de_apt)
-    #print(dicc_con_prob)
 
     #Se guarda la lista con los nombres de los equipos y la lista con las probabilidades en el mismo orden correspondiente
     #Cada equipo queda alineado con su probabilidad en index
@@ -28,20 +26,8 @@ def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectivene
         papa = dicc_con_prob[padres[0]]['eq_obj']
         mama = dicc_con_prob[padres[1]]['eq_obj']
 
-        '''print(f'Cruce {i+1}')
-        print('')
-        print('papa:')
-        for j in papa.pokemons:
-            print(j.name)
-        print('')
-        print('mama:')
-        for j in mama.pokemons:
-            print(j.name)'''
-
-        hijo = cruces(papa, mama, lista_de_pokemones, pokedex)
-
-        '''print('-'*30)'''
-
+        hijo = cruces(papa, mama, lista_de_pokemones, i)
+        print(i+1, ' ', hijo[0])
         nueva_generacion.append(hijo)
 
     #Se formaliza la generacion creando los objetos de cada equipo
@@ -49,6 +35,7 @@ def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectivene
     for contador, tupla in enumerate(nueva_generacion):
 
         objeto_equipo = equipo_post_cruza(tupla[0], tupla[1], contador + 1, epoca)
+        print(contador+1, ' passed')
         generacion_terminada.append(objeto_equipo)
 
     return generacion_terminada
@@ -68,7 +55,7 @@ def main():
 
     dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
-    for epoca in range(10):
+    for epoca in range(50):
         conts=contrincantes_ronda(lista_de_pokemones)
         gen_actual=simular_generacion(gen_actual, conts, dicc_effectiveness, epoca, lista_de_pokemones, dicc_de_pokemones)
 
