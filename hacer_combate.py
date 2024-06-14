@@ -98,64 +98,33 @@ def get_total_stats(pokemon)->int:
     return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
 
 def cruces(equipo_1, equipo_2, lista_pokemones, pokedex) -> tuple[list, int]:
-    #hay que arreglar esto
-    '''
-    Esta funcion agarra dos equipos y los cruza, pokemon por pokemon y el que tiene mas estadisticas en total
-    se agrega a un nuevo equipo formado por pokemones mas fuertes, asi con todos
-    Argumentos:
-        equipo_1, equipo_2: dos equipos que se cruzan y una lista_pokemones
-    Devuelve: 
-        lista_hijos: Una lista con objetos pokemon
-    '''
-    lista_hijos=[]
-    print('')
-    print('Cruces:')
+    hijos=[]
+    ref_hijos=[]
     for i in range(len(equipo_1.pokemons)):
-        mute=random.random()
-
-        print(f"cruce {i+1} - mute: {'si' if mute<0.03 else 'no'}")
-
-        if mute>0.03:
-            stats1 = get_total_stats(equipo_1.pokemons[i])
-            stats2 = get_total_stats(equipo_2.pokemons[i])
-            if stats1 > stats2:
-                if equipo_1.pokemons[i].name not in lista_hijos:
-                    lista_hijos.append(equipo_1.pokemons[i].name)
-                else:
-                    lista_hijos.append(equipo_2.pokemons[i].name)
-            else: 
-                if equipo_2.pokemons[i].name not in lista_hijos:
-                    lista_hijos.append(equipo_2.pokemons[i].name)
-                else:
-                    lista_hijos.append(equipo_1.pokemons[i].name)
-        else:
+        action=random.random()
+        if action<0.03:
             while True:
-                hijo = random.choice(lista_pokemones)
-                if hijo not in lista_hijos and hijo.is_legendary==False:
-                    lista_hijos.append(hijo.name)
-                    break   
-    
-    for i in range(len(lista_hijos)):
-        '''reemplaza el nombre en la lista_hijos por el objeto del pokemon que le corresponde
-        Para hacerlo toma (del diccionario con pokemones y su data) el pokedex number del pokemon
-        y reemplaza con el objeto en el indice de la lista de pokemones como objeto. 
-        '''
-        lista_hijos[i]=lista_de_pokemones[pokedex[lista_hijos[i]]['data']['pokedex_number']-1]
-    
-    print('')
-    print('hijo:')
-    for j in lista_hijos:
-        print(j.name)
-
+                hijo=random.choice(lista_de_pokemones)
+                if hijo.name not in ref_hijos and hijo.is_legendary==False:    
+                    break
+        elif action<0.515:
+            hijo=equipo_1.pokemons[i]
+            if hijo.name not in ref_hijos and hijo.is_legendary==False:
+                hijo=equipo_2.pokemons[i]
+        else:
+            hijo=equipo_2.pokemons[i]
+            if hijo.name not in ref_hijos and hijo.is_legendary==False:
+                hijo=equipo_1.pokemons[i]
+        hijos.append(hijo)
+        ref_hijos.append(hijo.name)
     starter_1 = equipo_1.current_pokemon_index
     starter_2 = equipo_2.current_pokemon_index
-    if equipo_1.pokemons[starter_1] == lista_hijos[starter_1]:
+    if equipo_1.pokemons[starter_1] == hijos[starter_1]:
         starter_nuevo=starter_1
     else:
         starter_nuevo=starter_2
-    return lista_hijos, starter_nuevo
+    return hijos, starter_nuevo
 
-    
 def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness):
     diccionario_con_aptitudes = dicc_apt(lista_equipos, contrincantes, dicc_effectiveness)
     actual = 0
