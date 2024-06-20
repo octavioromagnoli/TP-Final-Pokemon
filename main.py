@@ -60,7 +60,7 @@ def main():
 
     dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
-    for epoca in range(49): #Aca no hay que poner 50 porque una gen se corre con lo que esta afuera del for
+    for epoca in range(4): #Aca no hay que poner 50 porque una gen se corre con lo que esta afuera del for
         conts=contrincantes_ronda(lista_de_pokemones)
         gen_actual=simular_generacion(gen_actual[0], conts, dicc_effectiveness, epoca, lista_de_pokemones, all_apts)
         gen_quants.append(gen_actual[1])

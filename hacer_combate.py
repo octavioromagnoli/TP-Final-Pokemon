@@ -110,11 +110,20 @@ def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon], quant
             hijo=equipo_1.pokemons[i]
             if hijo.name in ref_hijos:      #si el pokemon del equipo 1 ya esta en la lista
                 hijo=equipo_2.pokemons[i]   #cambia el elegido al otro
+                if hijo.name in ref_hijos:  #si se da la muy baja probabilidad de que ambos pokemones esten
+                    while True:             #se fuerza una mutacion para no repetir
+                        hijo=random.choice(lista_pokemones) #elige poke al azar y chequea hasta que no este ya en la lista o no sea legendario
+                        if hijo.name not in ref_hijos and hijo.is_legendary==False:    
+                            break
         else: #prob de elegir el del equipo 2: 48,5%
             hijo=equipo_2.pokemons[i]
-            if hijo.name in ref_hijos:      #si el pokemon del equipo 1 ya esta en la lista
+            if hijo.name in ref_hijos:      #si el pokemon del equipo 2 ya esta en la lista
                 hijo=equipo_1.pokemons[i]   #cambia el elegido al otro
-
+                if hijo.name in ref_hijos:  #si se da la muy baja probabilidad de que ambos pokemones esten
+                    while True:             #se fuerza una mutacion para no repetir
+                        hijo=random.choice(lista_pokemones) #elige poke al azar y chequea hasta que no este ya en la lista o no sea legendario
+                        if hijo.name not in ref_hijos and hijo.is_legendary==False:    
+                            break
         #agrega el hijo a la lista resultado y el nombre a la referencia
         hijos.append(hijo)
         ref_hijos.append(hijo.name)
