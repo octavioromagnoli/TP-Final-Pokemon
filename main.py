@@ -4,9 +4,12 @@ import random
 from fun_crear_pokemon import pokediccionario, lista_pokemones, df_to_dictionary
 from fun_principal import crear_primera_gen, contrincantes_ronda, equipo_post_cruza
 from hacer_combate import dicc_apt, add_probabilidad, select_equipos_padres, cruces, mejor_equipo
+from CSVs import *
 
-def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectiveness: dict, epoca:int, lista_de_pokemones, pokedex) -> list:
-    dicc_de_apt=dicc_apt(gen_actual, contrincantes_gen, dicc_effectiveness)
+def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectiveness: dict, epoca:int, lista_de_pokemones:list, all_apts: list) -> tuple[list, dict, list]:
+    dicc_de_apt=dicc_apt(gen_actual, contrincantes_gen, dicc_effectiveness, epoca+1)
+
+    all_apts.append(dicc_de_apt)
 
     dicc_con_prob = add_probabilidad(dicc_de_apt)
 
@@ -20,25 +23,25 @@ def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectivene
     #Se crea una nueva generacion de 50 pokemons 
     #nueva_generacion es una lista[(lista de pokemones, starter)]
     nueva_generacion = []
+    this_quants = {}
     for i in range(50):
         padres = select_equipos_padres(nombres_de_equipos, lista_de_probabilidades)
 
         papa = dicc_con_prob[padres[0]]['eq_obj']
         mama = dicc_con_prob[padres[1]]['eq_obj']
 
-        hijo = cruces(papa, mama, lista_de_pokemones, i)
-        print(i+1, ' ', hijo[0])
-        nueva_generacion.append(hijo)
+        hijo = cruces(papa, mama, lista_de_pokemones, this_quants)
+        nueva_generacion.append(hijo[0:2])
+        this_quants = hijo[2]
 
     #Se formaliza la generacion creando los objetos de cada equipo
     generacion_terminada = []
     for contador, tupla in enumerate(nueva_generacion):
 
         objeto_equipo = equipo_post_cruza(tupla[0], tupla[1], contador + 1, epoca)
-        print(contador+1, ' passed')
         generacion_terminada.append(objeto_equipo)
 
-    return generacion_terminada
+    return generacion_terminada, this_quants, all_apts
 
 def main():
     #Se leen las bases de datos como pandas Dataframes
@@ -52,19 +55,28 @@ def main():
     #Se crea la generacion base de equipos
     primera_gen = crear_primera_gen(lista_de_pokemones)
     gen_actual = primera_gen
+    gen_quants = [primera_gen[1]]
+    all_apts = []
 
     dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
-    for epoca in range(50):
+    for epoca in range(49): #Aca no hay que poner 50 porque una gen se corre con lo que esta afuera del for
         conts=contrincantes_ronda(lista_de_pokemones)
-        gen_actual=simular_generacion(gen_actual, conts, dicc_effectiveness, epoca, lista_de_pokemones, dicc_de_pokemones)
+        gen_actual=simular_generacion(gen_actual[0], conts, dicc_effectiveness, epoca, lista_de_pokemones, all_apts)
+        gen_quants.append(gen_actual[1])
+        all_apts=gen_actual[2]
 
     cont_prueba_final = contrincantes_ronda(lista_de_pokemones)
-    equipo_definitivo = mejor_equipo(gen_actual, cont_prueba_final, dicc_effectiveness)
-    print("Este es el mejor equipo")
-    pokedefinitivos = equipo_definitivo.pokemons
+    equipo_definitivo = mejor_equipo(gen_actual[0], cont_prueba_final, dicc_effectiveness, all_apts)
+    print("Mejor equipo")
+    pokedefinitivos = equipo_definitivo[0].pokemons
+    all_apts=equipo_definitivo[1]
     for i in pokedefinitivos:
         print(f'{i.name}')
-    print(f'Starter: {equipo_definitivo.current_pokemon_index}')
+    print(f'Starter: {equipo_definitivo[0].current_pokemon_index}')
+    
+    #Archivos CSV
+    epochsCSV(gen_quants)
+    best_teamsCSV(all_apts)
 
 main()

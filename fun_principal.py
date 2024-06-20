@@ -15,15 +15,23 @@ def crear_primera_gen(lista_de_pokemones: list) -> list:
         list: Una lista de objetos `Team`, cada uno representando un equipo de pokemones.
     '''
     equipos_iniciales=[]
+    quants={}
     for i in range(50):
         equipo=[]
         while len(equipo)<6:
             pokemon = random.choice(lista_de_pokemones)
             if pokemon not in equipo and pokemon.is_legendary==False:
                 equipo.append(pokemon) 
+
+                #Se cuenta la cantidad de veces que aparece cada pokemon
+                if pokemon.name in quants:
+                    quants[pokemon.name]+=1
+                else:
+                    quants[pokemon.name]=1
+        
         starter = random.randint(0,5)
-        equipos_iniciales.append(Team("Team " + str(i+1), equipo, starter))
-    return equipos_iniciales
+        equipos_iniciales.append(Team("Team E0 "+ str(i), equipo, starter))
+    return equipos_iniciales, quants
 
 def contrincantes_ronda(lista_de_pokemones: list) -> list:
     '''
@@ -47,5 +55,5 @@ def contrincantes_ronda(lista_de_pokemones: list) -> list:
     return equipos_contrincantes
 
 def equipo_post_cruza(equipo_nuevo: list[object], starter: int, contador:int, contador_gen: int)->object:
-    equipo_armado = Team("Team E"+str(contador_gen)+" "+ str(contador), equipo_nuevo, starter)
+    equipo_armado = Team("Team E"+str(contador_gen+1)+" "+ str(contador-1), equipo_nuevo, starter)
     return equipo_armado

@@ -37,7 +37,7 @@ def aptitud_del_equipo(equipo_actual: object, lista_contrincantes: list, dicc_ef
     aptitud = victorias / 400
     return aptitud
 
-def dicc_apt(lista_de_equipos: list, lista_contrincantes: list, dicc_effectiveness: dict) -> dict:
+def dicc_apt(lista_de_equipos: list, lista_contrincantes: list, dicc_effectiveness: dict, epoca: int) -> dict:
     '''
     Crea un diccionario de aptitudes a partir la funcion "aptitud_del_equipo"
     Argumentos:
@@ -48,10 +48,9 @@ def dicc_apt(lista_de_equipos: list, lista_contrincantes: list, dicc_effectivene
         diccionario con los nombres de los equipos como clave, y la aptitud y el objeto equipo como valor 
     '''
     dic={}
-    for equipo in tqdm(range(len(lista_de_equipos)), desc='Calculating', unit=' iteration', colour='Yellow'):
+    for equipo in tqdm(range(len(lista_de_equipos)), desc=f'Simulando generacion {epoca}', unit=' iteration', colour='Yellow'):
         dic[lista_de_equipos[equipo].name]={'aptitud':aptitud_del_equipo(lista_de_equipos[equipo], lista_contrincantes, dicc_effectiveness), 'eq_obj': lista_de_equipos[equipo]}
     return dic
-
 
 def add_probabilidad(dic_poke_y_apt: dict):
     '''
@@ -97,7 +96,7 @@ def get_total_stats(pokemon)->int:
     """
     return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
 
-def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon]) -> tuple[list, int]:
+def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon], quants: dict) -> tuple[list, int, dict]:
     hijos=[] #lista retornada
     ref_hijos=[] #lista de referencia
     for i in range(len(equipo_1.pokemons)):
@@ -120,6 +119,12 @@ def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon]) -> tu
         hijos.append(hijo)
         ref_hijos.append(hijo.name)
 
+        #Se cuenta la cantidad de veces que aparece cada pokemon
+        if hijo.name in quants:
+            quants[hijo.name]+=1
+        else:
+            quants[hijo.name]=1
+
     #elige el starter del nuevo equipo 
     starter_1 = equipo_1.current_pokemon_index
     starter_2 = equipo_2.current_pokemon_index
@@ -127,16 +132,17 @@ def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon]) -> tu
         starter_nuevo=starter_1
     else:
         starter_nuevo=starter_2
-    return hijos, starter_nuevo
+    return hijos, starter_nuevo, quants
 
-def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness):
-    diccionario_con_aptitudes = dicc_apt(lista_equipos, contrincantes, dicc_effectiveness)
+def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness, all_apts):
+    diccionario_con_aptitudes = dicc_apt(lista_equipos, contrincantes, dicc_effectiveness, 50)
+    all_apts.append(diccionario_con_aptitudes)
     actual = 0
     ganador = ''
     for nombre_equipo in diccionario_con_aptitudes:
         if diccionario_con_aptitudes[nombre_equipo]['aptitud'] > actual:
             ganador = diccionario_con_aptitudes[nombre_equipo]['eq_obj']
-    return ganador
+    return ganador, all_apts
 
 def test_team(): 
     #Funcion inecesaria
