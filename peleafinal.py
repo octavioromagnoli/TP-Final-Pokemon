@@ -2,7 +2,6 @@ import pygame
 import pandas as pd
 from utils.team import Team
 from fun_crear_pokemon import pokediccionario, lista_pokemones, df_to_dictionary
-from fun_principal import crear_primera_gen
 from utils.combat import __faint_change__, desmayados
 
 effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
@@ -18,10 +17,9 @@ pygame.display.set_caption("Batalla Pokemon")
 
 
 font = pygame.font.Font(None, 36)
-log_font = pygame.font.Font(None, 36)
-muertos_font = pygame.font.Font(None, 20)
+
 inicial_font = pygame.font.Font(None, 60)
-winner_font = pygame.font.Font(None, 200)
+
 
 
 white = (255, 255, 255)
@@ -64,7 +62,9 @@ def draw_battle(team1, team2, log, muertos1, muertos2):
     #dibujo ambos pokemones en pantalla
     draw_pokemon(team1.get_current_pokemon(), 50, 50)
     draw_pokemon(team2.get_current_pokemon(), 450, 50)
-    
+
+    log_font = pygame.font.Font(None, 36)
+    muertos_font = pygame.font.Font(None, 20)
     log_text = log_font.render(log, True, white)
     muertos1_text = muertos_font.render(f'Equipo 1, Muertos: {str(muertos1)}', True, white)
     muertos2_text = muertos_font.render(f'Equipo 2, Muertos: {str(muertos2)}', True, white)
@@ -75,9 +75,10 @@ def draw_battle(team1, team2, log, muertos1, muertos2):
     pygame.display.flip()
 
 def draw_winner(winner):
-    screen.fill((17,65,64))    
-    winner_text = winner_font.render(winner.name, True, white)
-    screen.blit(winner_text, (400, 300))
+    screen.fill((17,65,64))   
+    winner_font = pygame.font.Font(None, 50) 
+    winner_text = winner_font.render(f'Ganador: {winner.name}', True, white)
+    screen.blit(winner_text, (200, 300))
     pygame.display.flip()
     
 def batalla_jueguito(team1, team2, effectiveness):
@@ -166,12 +167,12 @@ def batalla_jueguito(team1, team2, effectiveness):
                         vuelta = 1
                     if not any(pokemon.esta_vivo() for pokemon in team1.pokemons):
                         log_temporal = "Terminó la pelea, Ganó el equipo 2."
-                        winner='T2'
+                        winner=team2
                         running = False
                 
                     if not any(pokemon.esta_vivo() for pokemon in team2.pokemons):
                         log_temporal = "Terminó la pelea, Ganó el equipo 1."
-                        winner='T1'
+                        winner=team1
                         running = False
                         
 
@@ -198,7 +199,14 @@ def batalla_jueguito(team1, team2, effectiveness):
                     draw_battle(team1, team2, log_temporal, muertos1, muertos2)
                     pygame.display.flip()
                     advance_turn = False
-    draw_winner(winner)
+    wait=True
+    while wait:
+        draw_winner(winner)
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    wait=False
     
         
 

@@ -2,7 +2,6 @@ import copy
 
 from utils.pokemon import Pokemon
 from utils.move import Move
-from utils.combat import desmayados
 
 class Team:
     def __init__(self, name: str, pokemons: list[Pokemon], starter: int=0):
