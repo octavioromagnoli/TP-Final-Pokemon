@@ -13,8 +13,8 @@ def epochsCSV(quants: list):
 
             #Se escribe una linea
             with open('epochs.csv','a') as epochs:
-                epochs.writelines(f'{generacion},{len(lista)},') #numero de generacion , variedad de pokemones
-                epochs.writelines(f'{lista[k][1]},{lista[k][0]},' for k in range(len(lista))) #nombre , cant para cada pokemon
+                epochs.writelines(f'{generacion},{len(lista)}') #numero de generacion , variedad de pokemones
+                epochs.writelines(f',{lista[k][1]},{lista[k][0]}' for k in range(len(lista))) #nombre , cant para cada pokemon
                 epochs.write('\n')
 
 def best_teamsCSV(apts: list):
@@ -30,9 +30,9 @@ def best_teamsCSV(apts: list):
             lista.reverse()
 
             #Se escriben las tres lineas de cada gen
-            with open('epochs.csv','a') as epochs:
+            with open('epochs.csv','a') as best:
                 for top in range(3):
-                    best.writelines(f'{generacion},{lista[top][0]},{lista[top][1]},') #numero de generacion , aptitud , nombre
-                    best.writelines(f'{apts[generacion][lista[top][1]]["eq_obj"].current_pokemon_index},') #starter
-                    best.writelines(f'{apts[generacion][lista[top][1]]["eq_obj"].pokemons[k].name},' for k in range(6)) #pokemones del equipo
+                    best.writelines(f'{generacion},{lista[top][0]},{lista[top][1]}') #numero de generacion , aptitud , nombre
+                    best.writelines(f',{apts[generacion][lista[top][1]]["eq_obj"].current_pokemon_index}') #starter
+                    best.writelines(f',{apts[generacion][lista[top][1]]["eq_obj"].pokemons[k].name}' for k in range(6)) #pokemones del equipo
                     best.write('\n')

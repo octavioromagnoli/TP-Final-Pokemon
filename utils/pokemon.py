@@ -170,3 +170,6 @@ class Pokemon:
                         best_damage = damage
                         best_move = move
         return best_move, best_damage
+
+    def esta_vivo(self):
+        return self.current_hp > 0

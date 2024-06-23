@@ -2,6 +2,7 @@ import copy
 
 from utils.pokemon import Pokemon
 from utils.move import Move
+from utils.combat import desmayados
 
 class Team:
     def __init__(self, name: str, pokemons: list[Pokemon], starter: int=0):
@@ -30,7 +31,7 @@ class Team:
         Pokemon: The current pokemon of the team."""
         return self.pokemons[self.current_pokemon_index]
 
-    def change_pokemon(self, index: int) -> None:
+    def change_pokemon(self, index: int) -> str:
         """
         Changes the current pokemon of the team.
 
@@ -92,8 +93,7 @@ class Team:
             return 'switch', best_pokemon_i
         else:
             return 'attack', best_move
-
-
+        
     def do_action(self, action: str, target: Move|int|None, defender: 'Team', effectiveness: dict[str, dict[str, float]]) -> None:
         """
         Executes an action.
@@ -116,3 +116,37 @@ class Team:
                 self.consecutive_switches += 1
         else:
             self.get_current_pokemon().current_hp = 0
+
+    def accionar_casero(self, action, move, opponent_team, effectiveness):
+        str_retornable =''
+        if action == 'attack':
+            current_pokemon = self.get_current_pokemon()
+            opponent_pokemon = opponent_team.get_current_pokemon()
+            damage = move.get_damage(self.get_current_pokemon(), opponent_team.get_current_pokemon(), effectiveness)
+            opponent_team.recieve_damage(damage)
+            self.consecutive_switches = 0
+            str_retornable = f"{current_pokemon.name} used {move.name} and dealt {damage:.02f} damage."
+
+        elif action == 'switch':
+            if move is not None:
+                self.change_pokemon(move)
+                self.consecutive_switches += 1
+            str_retornable = f"HUBO UN SWITCH {self.get_current_pokemon().name} is now in battle."
+
+        else:
+            self.get_current_pokemon().current_hp = 0
+            
+        return str_retornable
+
+    def cambia_sig(self, index: int):
+        """
+        Changes the current pokemon of the team.
+
+        Parameters:
+        index (int): The index of the pokemon that will become the current pokemon.
+        """
+        if index < len(self.pokemons) and self.pokemons[index].current_hp > 0:
+            self.current_pokemon_index = index
+            return "Switch de Pokemon"
+        else:
+            raise ValueError('Invalid pokemon index')

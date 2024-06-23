@@ -4,7 +4,7 @@ import random
 from fun_crear_pokemon import pokediccionario, lista_pokemones, df_to_dictionary
 from fun_principal import crear_primera_gen, contrincantes_ronda, equipo_post_cruza
 from hacer_combate import dicc_apt, add_probabilidad, select_equipos_padres, cruces, mejor_equipo
-from CSVs import *
+from CSVs import epochsCSV, best_teamsCSV
 
 def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectiveness: dict, epoca:int, lista_de_pokemones:list, all_apts: list) -> tuple[list, dict, list]:
     dicc_de_apt=dicc_apt(gen_actual, contrincantes_gen, dicc_effectiveness, epoca+1)
