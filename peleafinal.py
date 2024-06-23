@@ -102,7 +102,6 @@ def batalla_jueguito(team1, team2, effectiveness):
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and not battle_started:
-                    print('ENTER')
                     battle_started = True
                     screen.fill(black)
                     inicial_texto = inicial_font.render(f'Empieza la batalla!', True, white)
@@ -110,7 +109,6 @@ def batalla_jueguito(team1, team2, effectiveness):
                     pygame.display.flip()
                     
                 elif event.key == pygame.K_RETURN and battle_started and not advance_turn:
-                    print('ENTER')
                     advance_turn = True
 
         
@@ -119,7 +117,6 @@ def batalla_jueguito(team1, team2, effectiveness):
             
             if advance_turn:
                 
-                print(f'VUELTA: {vuelta}')
                 log_temporal = ""
                 if vuelta == 0:
                     accion_1, objetivo_1 = team1.get_next_action(team2, effectiveness)
@@ -160,7 +157,8 @@ def batalla_jueguito(team1, team2, effectiveness):
                     advance_turn = False
                 
                 elif vuelta == 2:
-                    desmayados(team1, team2, effectiveness)
+                    cambio1, cambio2 = desmayados(team1, team2, effectiveness)
+                    log_temporal = cambio1 + cambio2
                     if ataco == 'a':
                         vuelta = 3
                     else:

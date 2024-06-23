@@ -130,7 +130,7 @@ class Team:
             if move is not None:
                 self.change_pokemon(move)
                 self.consecutive_switches += 1
-            str_retornable = f"HUBO UN SWITCH {self.get_current_pokemon().name} is now in battle."
+            str_retornable = f"{self.get_current_pokemon().name} entró a la pelea."
 
         else:
             self.get_current_pokemon().current_hp = 0

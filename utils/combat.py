@@ -35,6 +35,8 @@ def desmayados(team1: Team, team2: Team, effectiveness: dict[str, dict[str, floa
     effectiveness (dict[str, dict[str, float]]): A dictionary that contains the effectiveness of each type against
     another.
     """
+    cambio1 =''
+    cambio2 = ''
     if team1.get_current_pokemon().current_hp == 0:
         fainted_team = team1
         other_team = team2
@@ -42,10 +44,12 @@ def desmayados(team1: Team, team2: Team, effectiveness: dict[str, dict[str, floa
         fainted_team = team2
         other_team = team1
     action_1, target_1 = fainted_team.get_next_action(other_team, effectiveness)
-    fainted_team.accionar_casero(action_1, target_1, other_team, effectiveness)
+    cambio1 = fainted_team.accionar_casero(action_1, target_1, other_team, effectiveness)
     action_2, target_2 = other_team.get_next_action(fainted_team, effectiveness)
     if action_2 == 'switch':
-        other_team.accionar_casero(action_2, target_2, fainted_team, effectiveness)
+        cambio2 = other_team.accionar_casero(action_2, target_2, fainted_team, effectiveness)
+
+    return cambio1, cambio2
 
 def __fight__(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float]]) -> Team:
     """
