@@ -8,6 +8,8 @@ effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
 dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("MusicaBatalla.mp3")
 
 
 screen_width = 800
@@ -15,6 +17,7 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Batalla Pokemon")
 
+bgimage = pygame.image.load("FondoPelea.png")
 
 font = pygame.font.Font(None, 36)
 
@@ -22,20 +25,22 @@ inicial_font = pygame.font.Font(None, 60)
 
 
 
+
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
+name_color = (1, 5, 48)
 
 
 
 def draw_pokemon(pokemon, x, y):
-    name_text = font.render(pokemon.name, True, white)
+    name_text = font.render(pokemon.name, True, name_color)
     #imprimo el nombre en posicion x y
     screen.blit(name_text, (x, y))
 
     
-    hp_text = font.render(f"HP: {pokemon.current_hp:.0f}/{pokemon.max_hp:.0f}", True, white)
+    hp_text = font.render(f"HP: {pokemon.current_hp:.0f}/{pokemon.max_hp:.0f}", True, black)
     #imprimo el hp alineado con el nombre pero 30 pixeles abajo
     screen.blit(hp_text, (x, y + 30))
 
@@ -58,26 +63,28 @@ def draw_pokemon(pokemon, x, y):
     pygame.draw.rect(screen, green, (hp_bar_x, hp_bar_y, current_hp_width, hp_bar_height))
 
 def draw_battle(team1, team2, log, muertos1, muertos2):
-    screen.fill((17,65,64))
+    #screen.fill((17,65,64))
+    screen.blit(bgimage, (0, 0))
     #dibujo ambos pokemones en pantalla
     draw_pokemon(team1.get_current_pokemon(), 50, 50)
     draw_pokemon(team2.get_current_pokemon(), 450, 50)
 
     log_font = pygame.font.Font(None, 36)
     muertos_font = pygame.font.Font(None, 20)
-    log_text = log_font.render(log, True, white)
-    muertos1_text = muertos_font.render(f'Equipo 1, Muertos: {str(muertos1)}', True, white)
-    muertos2_text = muertos_font.render(f'Equipo 2, Muertos: {str(muertos2)}', True, white)
+    log_text = log_font.render(log, True, black)
+    muertos1_text = muertos_font.render(f'Derrotados: {str(muertos1)}', True, black)
+    muertos2_text = muertos_font.render(f'Derrotados: {str(muertos2)}', True, black)
     screen.blit(log_text, (60, 480))
-    screen.blit(muertos1_text, (80, 550))
-    screen.blit(muertos2_text, (450, 550))
+    screen.blit(muertos1_text, (149, 559))
+    screen.blit(muertos2_text, (542, 559))
 
     pygame.display.flip()
 
 def draw_winner(winner):
     screen.fill((17,65,64))   
+    #screen.blit(bgimage, (0, 0))
     winner_font = pygame.font.Font(None, 50) 
-    winner_text = winner_font.render(f'Ganador: {winner.name}', True, white)
+    winner_text = winner_font.render(f'Ganador: ¡{winner.name}!', True, white)
     screen.blit(winner_text, (200, 300))
     pygame.display.flip()
     
@@ -105,6 +112,8 @@ def batalla_jueguito(team1, team2, effectiveness):
                     battle_started = True
                     screen.fill(black)
                     inicial_texto = inicial_font.render(f'Empieza la batalla!', True, white)
+                    pygame.mixer.music.set_volume(0.3)
+                    pygame.mixer.music.play(-1)  
                     screen.blit(inicial_texto, (110, 270))
                     pygame.display.flip()
                     
