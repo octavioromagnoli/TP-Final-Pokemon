@@ -1,1 +1,16 @@
 epoch,aptitude,team_name,starter,pokemon_1,pokemon_2,pokemon_3,pokemon_4,pokemon_5,pokemon_6
+0,0.9325,Team E0 35,2,Hawlucha,Primeape,Piplup,Slaking,Samurott,Slakoth
+0,0.875,Team E0 44,4,Bouffalant,Meowstic-M,Dragalge,Lampent,Lickilicky,Espurr
+0,0.865,Team E0 14,4,Solrock,Stantler,Altaria,Wishiwashi,Serperior,Kingdra
+1,0.965,Team E1 44,2,Hawlucha,Camerupt,Piplup,Slaking,Samurott,Slakoth
+1,0.9575,Team E1 41,2,Hawlucha,Roselia,Piplup,Slaking,Samurott,Slakoth
+1,0.9425,Team E1 9,2,Kingler,Primeape,Piplup,Slaking,Samurott,Slakoth
+2,0.975,Team E2 47,4,Hawlucha,Roselia,Silcoon,Slaking,Lycanroc,Kingdra
+2,0.945,Team E2 5,4,Bouffalant,Tranquill,Milotic,Golurk,Lickilicky,Comfey
+2,0.925,Team E2 1,4,Solrock,Stantler,Altaria,Greninja,Lycanroc,Kingdra
+3,0.9725,Team E3 9,4,Oranguru,Hydreigon,Jellicent,Golurk,Serperior,Audino
+3,0.9725,Team E3 45,1,Slakoth,Pidgeotto,Jellicent,Slaking,Lycanroc,Kingdra
+3,0.9675,Team E3 40,4,Mismagius,Purugly,Milotic,Mantine,Lickilicky,Comfey
+4,0.98,Team E4 5,4,Silvally,Purugly,Lumineon,Whimsicott,Lickilicky,Comfey
+4,0.9775,Team E4 14,4,Bouffalant,Pidgeotto,Jellicent,Garbodor,Lickilicky,Flygon
+4,0.975,Team E4 8,2,Toxicroak,Salamence,Minior,Greninja,Burmy,Kingdra

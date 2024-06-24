@@ -3,13 +3,12 @@ import pandas as pd
 import numpy as np
 
 def diversidad_x_epoca():
-    with open('epochs_prueba.csv', 'r') as file:
+    with open('epochs.csv', 'r') as file:
         epochs = file.readlines()
     epocas = []
     diversidad = []
     for linea in epochs:
         elementos = [elem.strip() for elem in linea.split(',')]
-        print(elementos)
         epocas.append(int(elementos[0])) 
         diversidad.append(int(elementos[1]))
 
@@ -35,8 +34,6 @@ def aptitud_x_epoca():
         epocas.append(int(elementos[0])) 
         aptitud.append(float(elementos[1]))
 
-    print(epocas)
-    print(aptitud)
     plt.plot(epocas, aptitud, color='m')
     plt.xlabel('Epocas')
     plt.ylabel('Aptitud')
@@ -46,7 +43,7 @@ def aptitud_x_epoca():
 aptitud_x_epoca()
 
 def pokemones_ultima_epoca():
-    with open('epochs_prueba.csv', 'r') as file:
+    with open('epochs.csv', 'r') as file:
         epochs = file.readlines()
         ultima_epoca = epochs[-1].strip().split(',')
         cantidad_cada_pokemon = []
@@ -54,10 +51,8 @@ def pokemones_ultima_epoca():
         for i in range(2, len(ultima_epoca), 2):
             cantidad_cada_pokemon.append(int(ultima_epoca[i+1]))
             pokemones.append(ultima_epoca[i])
-        
-    print(pokemones)
-    print(cantidad_cada_pokemon)
-    plt.figure(figsize=(10, 6))  # Tamaño de la figura
+
+    plt.figure(figsize=(10, 6))  
     plt.bar(pokemones, cantidad_cada_pokemon, color='m')
     plt.xlabel('Pokemones')
     plt.ylabel('Cantidad')
@@ -80,17 +75,12 @@ def estadisticas_mejor_equipo():
         equipo = best_teams[i].strip().split(',')[4:10]  
         pokemones = equipo
             
-        print("Pokémon del mejor equipo:")
-        print(pokemones)
     estadisticas_pokemones = []
-    pokemon_df = pd.read_csv('pokemons.csv')
+    pokemon_df = pd.read_csv('data/pokemons.csv')
     stats_columns = pokemon_df[['name', 'hp', 'attack', 'defense', 'sp_attack', 'sp_defense', 'speed']]
     for pokemon_name in pokemones:
         pokemon_stats = stats_columns[stats_columns['name'] == pokemon_name].values.tolist()
         estadisticas_pokemones.append(pokemon_stats[0][1:])
-    print(estadisticas_pokemones)
-    
-    # Radar chart
 
     angles = np.linspace(0, 2*np.pi, 6, endpoint=False).tolist()
     angles += angles[:1]
