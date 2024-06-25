@@ -30,7 +30,7 @@ def best_teamsCSV(apts: list):
             lista.reverse()
 
             #Se escriben las tres lineas de cada gen
-            with open('epochs.csv','a') as best:
+            with open('best_teams.csv','a') as best:
                 for top in range(3):
                     best.writelines(f'{generacion},{lista[top][0]},{lista[top][1]}') #numero de generacion , aptitud , nombre
                     best.writelines(f',{apts[generacion][lista[top][1]]["eq_obj"].current_pokemon_index}') #starter
