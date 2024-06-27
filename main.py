@@ -6,6 +6,7 @@ from CSVs import epochsCSV, best_teamsCSV
 from utils.team import Team
 from utils.pokemon import Pokemon
 from peleafinal import jugar_jueguito
+from graficos import diversidad_x_epoca, aptitud_x_epoca, pokemones_ultima_epoca, estadisticas_mejor_equipo
 
 def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectiveness: dict, epoca:int, lista_de_pokemones:list, all_apts: list) -> tuple[list, dict, list]:
     """
@@ -65,6 +66,8 @@ def simular_generacion(gen_actual:list, contrincantes_gen:list, dicc_effectivene
     return generacion_terminada, this_quants, all_apts
 
 def main():
+    print(f'\n ########## SIMULADOR GENETICO POKEMON ##########\n')
+
     #Se leen las bases de datos como pandas Dataframes
     pokemon_df = pd.read_csv('data/pokemons.csv')
     moves_df = pd.read_csv('data/moves.csv')
@@ -113,11 +116,21 @@ def main():
     print(f'Starter: {equipo_definitivo[0].current_pokemon_index}')
     
     #Archivos CSV
-    #epochsCSV(gen_quants)
-    #best_teamsCSV(all_apts)
+    epochsCSV(gen_quants)
+    best_teamsCSV(all_apts)
 
+    #Graficos
+    deseo_graficos = input("¿Desea ver los graficos para visualizar los resultados? (Si/No) \n")
+    if deseo_graficos == 'Si' or deseo_graficos == 'si':
+        diversidad_x_epoca()
+        aptitud_x_epoca()
+        pokemones_ultima_epoca()
+        estadisticas_mejor_equipo()
+
+    print(f'\n ########## PELEA FINAL ##########\n')
+    
     dicc_campeones = {'Will': ["Bronzong", "Jynx", "Grumpig", "Slowbro", "Gardevoir", "Xatu"],
-                    'Koga': ['Skunktank', 'Toxicroak', 'Swalot', 'Venomoth', 'Muk', 'Crobat'],
+                    'Koga': ['Skuntank', 'Toxicroak', 'Swalot', 'Venomoth', 'Muk', 'Crobat'],
                     'Bruno': ['Hitmontop', 'Hitmonlee', 'Hariyama', 'Machamp', 'Lucario', 'Hitmonchan'],
                     'Karen': ['Weavile', 'Spiritomb', 'Honchkrow', 'Umbreon', 'Houndoom', 'Absol'],
                     'Lance': ['Salamence', 'Garchomp', 'Dragonite', 'Charizard', 'Altaria', 'Gyarados']}
@@ -139,8 +152,12 @@ def main():
 
         #Se le pregunta al usuario si desea jugar contra otro equipo
         repetir = input('Desea jugar de nuevo? (Si/No)\n')
-        if repetir == 'No':
+        if repetir == 'No' or repetir == 'no':
             break
+        for pokemon in users_team.pokemons:
+            pokemon.current_hp = pokemon.max_hp
+        for pokemon in AI_team.pokemons:
+            pokemon.current_hp = pokemon.max_hp
 
 if __name__ == '__main__':
     main()

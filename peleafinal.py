@@ -61,7 +61,7 @@ def draw_pokemon(pokemon, x, y, screen, font):
     #Escribo en pantalla el rectangulo verde
     pygame.draw.rect(screen, (0,255,0), (hp_bar_x, hp_bar_y, current_hp_width, hp_bar_height))
 
-def draw_battle(team1, team2, log, muertos1, muertos2, screen, bgimage, font):
+def draw_battle(team1, team2, log, muertos1, muertos2, screen, bgimage, font, first):
     '''
     Funcion principal, que se apoya en las otras funciones, para dibujar
     la pelea en pantalla y actualizarla a tiempo real. Dibuja sobre el fondo:
@@ -83,11 +83,13 @@ def draw_battle(team1, team2, log, muertos1, muertos2, screen, bgimage, font):
     draw_pokemon(team1.get_current_pokemon(), 50, 50, screen, font)
     draw_pokemon(team2.get_current_pokemon(), 450, 50, screen, font)
 
-    log_font = pygame.font.Font(None, 36)
     muertos_font = pygame.font.Font(None, 20)
+    primero_text = muertos_font.render(f'Primero en el turno: {first}', True, (0,0,0))
+    log_font = pygame.font.Font(None, 36)
     log_text = log_font.render(log, True, (0,0,0))
     muertos1_text = muertos_font.render(f'Derrotados: {str(muertos1)}', True, (0,0,0))
     muertos2_text = muertos_font.render(f'Derrotados: {str(muertos2)}', True, (0,0,0))
+    screen.blit(primero_text, (280, 180))
     screen.blit(log_text, (60, 480))
     screen.blit(muertos1_text, (149, 559))
     screen.blit(muertos2_text, (542, 559))
@@ -157,11 +159,9 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                     accion_1, objetivo_1 = team1.get_next_action(team2, effectiveness)
                     accion_2, objetivo_2 = team2.get_next_action(team1, effectiveness)
                     if accion_1 == 'switch':
-                        print(team1.consecutive_switches)
                         first = team1
                         second = team2
                     elif accion_2 == 'switch':
-                        print(team2.consecutive_switches)
                         first = team2
                         second = team1
                         accion_1, objetivo_1, accion_2, objetivo_2 = accion_2, objetivo_2, accion_1, objetivo_1
@@ -173,17 +173,13 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                         first = team2
                         second = team1
                         accion_1, objetivo_1, accion_2, objetivo_2 = accion_2, objetivo_2, accion_1, objetivo_1
-                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font)
+                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font, first.name)
                     pygame.display.flip()
                     vuelta = 1
-                    advance_turn = False
-                
+                    
                 elif vuelta == 1:
-                    print('vuelta 1')
                     ataco = 'a'
                     log_temporal = first.accionar_casero(accion_1, objetivo_1, second, effectiveness)
-                    print(first.consecutive_switches)
-                    print(team1.consecutive_switches)
                     if team1.get_current_pokemon().current_hp == 0:
                         vuelta = 2
                         muertos1 += 1
@@ -192,19 +188,14 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                         muertos2 += 1
                     else:
                         vuelta = 3
-                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font)
+                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font, first.name)
                     pygame.display.flip()
                     advance_turn = False
                 
                 elif vuelta == 2:
-                    print('vuelta 2')
                     cambio1, cambio2 = desmayados(team1, team2, effectiveness)
                     log_temporal = cambio1 + cambio2
                     vuelta = 0
-                    '''if ataco == 'a':
-                        vuelta = 3
-                    else:
-                        vuelta = 1'''
                     if not any(pokemon.esta_vivo() for pokemon in team1.pokemons):
                         log_temporal = "Terminó la pelea, Ganó el equipo 2."
                         winner=team2
@@ -215,13 +206,11 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                         winner=team1
                         running = False
                         
-
-                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font)
+                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font, first.name)
                     pygame.display.flip()
                     advance_turn = False
                 
                 elif vuelta == 3:
-                    print('vuelta 3')
                     ataco = 'b'
                     #Si murio el objetivo cambia de accion
                     if accion_2 == 'attack' and objetivo_2 is None:
@@ -236,8 +225,8 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                         muertos2 += 1
                         vuelta = 2
                     else: 
-                        vuelta = 1
-                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font)
+                        vuelta = 0
+                    draw_battle(team1, team2, log_temporal, muertos1, muertos2, screen, bgimage, font, first.name)
                     pygame.display.flip()
                     advance_turn = False
     wait=True
@@ -262,7 +251,7 @@ if __name__ == "__main__":
     pokedex=pokediccionario(pokemon_df, moves_df)
     pokemones=lista_pokemones(pokedex)
 
-    poks1=['Solrock','Igglybuff','Riolu','Yanma','Cherubi','Scizor']
+    poks1=['Blaziken','Gastrodon','Gengar','Mightyena','Silvally','Tauros']
     for i in range(len(poks1)):
         poks1[i]=pokemones[pokedex[poks1[i]]['data']['pokedex_number']-1]
     team1=Team('Equipo 1',poks1,0)

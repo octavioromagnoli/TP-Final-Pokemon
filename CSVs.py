@@ -29,6 +29,9 @@ def best_teamsCSV(apts: list):
             lista.sort()
             lista.reverse()
 
+            print(lista)
+            print(generacion)
+
             #Se escriben las tres lineas de cada gen
             with open('best_teams.csv','a') as best:
                 for top in range(3):
