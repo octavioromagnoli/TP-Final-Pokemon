@@ -158,7 +158,7 @@ def batalla_jueguito(team1: Team, team2: Team, effectiveness: dict, screen, bgim
                     battle_started = True
                     screen.fill((0,0,0))
                     inicial_texto = inicial_font.render(f'Empieza la batalla!', True, (255,255,255))
-                    pygame.mixer.music.set_volume(0.0)
+                    pygame.mixer.music.set_volume(0.3)
                     pygame.mixer.music.play(-1)  
                     screen.blit(inicial_texto, (110, 270))
                     pygame.display.flip()
