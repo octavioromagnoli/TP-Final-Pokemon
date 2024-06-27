@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from utils.pokemon import Pokemon
 
-def create_pokemon_data(pokemon_df, nombre_pokemon: str)-> dict:
+def create_pokemon_data(pokemon_df, nombre_pokemon: str) -> dict:
     '''
     Crea una diccionario con las caracteristicas de cada Pokemon.
     IMPORTANTE: si un pokemon no tiene un dato rellena con un 0, 

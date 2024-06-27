@@ -6,17 +6,7 @@ from utils.team import Team
 from utils.pokemon import Pokemon
 from utils.combat import __fight__, get_winner
 
-pokemon_df = pd.read_csv('data/pokemons.csv')
-moves_df = pd.read_csv('data/moves.csv')
-effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
-
-dicc_de_pokemones = pokediccionario(pokemon_df, moves_df)
-
-lista_de_pokemones = lista_pokemones(dicc_de_pokemones)
-
-dicc_effectiveness = df_to_dictionary(effectivenes_df)
-
-def aptitud_del_equipo(equipo_actual: object, lista_contrincantes: list, dicc_effectiveness: dict)->float:
+def aptitud_del_equipo(equipo_actual: object, lista_contrincantes: list, dicc_effectiveness: dict) -> float:
     '''
     Simula la batalla entre el pokemon que se le da y todos los equipos en lista_contrincantes
     El resultado es el promedio de batallas ganadas que tuvo el equipo en cuestion.
@@ -50,7 +40,7 @@ def dicc_apt(lista_de_equipos: list, lista_contrincantes: list, dicc_effectivene
         dic[lista_de_equipos[equipo].name]={'aptitud':aptitud_del_equipo(lista_de_equipos[equipo], lista_contrincantes, dicc_effectiveness), 'eq_obj': lista_de_equipos[equipo]}
     return dic
 
-def add_probabilidad(dic_poke_y_apt: dict):
+def add_probabilidad(dic_poke_y_apt: dict) -> dict:
     '''
     Toma el diccionario con los nombres de los equipos y les agrega una probabilidad de ser elegidos como padres.
     Argumentos:
@@ -67,7 +57,7 @@ def add_probabilidad(dic_poke_y_apt: dict):
         dic_poke_y_apt[equipo]['probability'] = dic_poke_y_apt[equipo]['aptitud'] / apt_total
     return dic_poke_y_apt
 
-def select_equipos_padres(lista_de_equipos: list, lista_de_probabilidades: list)-> list:
+def select_equipos_padres(lista_de_equipos: list, lista_de_probabilidades: list) -> list:
     '''
     Elije dos padres (distintos) segun sus probabilidades asignadas.
     Argumentos:
@@ -158,7 +148,7 @@ def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon], quant
         starter_nuevo=starter_2
     return hijos, starter_nuevo, quants
 
-def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness, all_apts, max_epoch):
+def mejor_equipo(lista_equipos: list, contrincantes: list, dicc_effectiveness: dict, all_apts: list, max_epoch: int) -> tuple[Team, list]:
     '''
     La funcion devuelve el mejor equipo como objeto y actualiza la lista de todas las aptitudes.
     Argumentos:

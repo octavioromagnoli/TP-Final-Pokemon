@@ -116,7 +116,13 @@ class Team:
         else:
             self.get_current_pokemon().current_hp = 0
 
-    def accionar_casero(self, action, move, opponent_team, effectiveness):
+    def accionar_casero(self, action: str, move: Move|int|None, opponent_team: 'Team', effectiveness: dict[str, dict[str, float]])-> str:
+        '''
+        Copia de la funcion do_action, con la diferencia de que retorna strings que accedemos en la
+        simulacion para ser dibujados en pantalla.
+        Devuelve:
+            str_retornable: string que indica el cambio (si se hizo un cambio) o el ataque y dano realizados.
+        '''
         str_retornable =''
         if action == 'attack':
             current_pokemon = self.get_current_pokemon()
@@ -136,16 +142,3 @@ class Team:
             self.get_current_pokemon().current_hp = 0
             
         return str_retornable
-
-    def cambia_sig(self, index: int):
-        """
-        Changes the current pokemon of the team.
-
-        Parameters:
-        index (int): The index of the pokemon that will become the current pokemon.
-        """
-        if index < len(self.pokemons) and self.pokemons[index].current_hp > 0:
-            self.current_pokemon_index = index
-            return "Switch de Pokemon"
-        else:
-            raise ValueError('Invalid pokemon index')

@@ -26,14 +26,11 @@ def __faint_change__(team1: Team, team2: Team, effectiveness: dict[str, dict[str
 
 def desmayados(team1: Team, team2: Team, effectiveness: dict[str, dict[str, float]]) -> None:
     """
-    Changes the current pokemon of the team that has a fainted pokemon. The other team can also switch its pokemon after
-    the fainted team.
-
-    Parameters:
-    team1 (Team): One of the teams.
-    team2 (Team): The other team.
-    effectiveness (dict[str, dict[str, float]]): A dictionary that contains the effectiveness of each type against
-    another.
+    Copia de __fainted__ que utiliza accionar_casero() en vez de do_action() para recibir el 
+    mensaje de retorno cuando se cambia un Pokemon, y asi poder imprimirlo en pantalla en la
+    simulacion.
+    Retorna:
+        cambio1, cambio2: strings que indican el cambio de pokemon realizado, o vacios si no se realizo un cambio.
     """
     cambio1 =''
     cambio2 = ''

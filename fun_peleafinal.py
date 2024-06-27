@@ -8,6 +8,13 @@ effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
 dicc_effectiveness = df_to_dictionary(effectivenes_df)
 
 def iniciar_pygame():
+    '''
+    funcion para inicializar pygame y crear algunas variables.
+    Devuelve:
+        screen: ventana display de pygame.
+        bgimage: imagen de pygame.
+        font: font de pygame.
+    '''
     pygame.init()
     pygame.mixer.init()
     pygame.mixer.music.load("MusicaBatalla.mp3")
@@ -19,7 +26,7 @@ def iniciar_pygame():
     font = pygame.font.Font(None, 36)
     return screen, bgimage, font
 
-def draw_pokemon(pokemon, x, y, screen, font):
+def draw_pokemon(pokemon: Team, x: int, y: int, screen, font):
     '''
     Funcion que se llama para dibujar el pokemon en la posicion que se le da.
     Dibuja toda la seccion correspondiente al pokemon y su data, esto incluye:
@@ -61,7 +68,7 @@ def draw_pokemon(pokemon, x, y, screen, font):
     #Escribo en pantalla el rectangulo verde
     pygame.draw.rect(screen, (0,255,0), (hp_bar_x, hp_bar_y, current_hp_width, hp_bar_height))
 
-def draw_battle(team1, team2, log, muertos1, muertos2, screen, bgimage, font, first):
+def draw_battle(team1: Team, team2: Team, log: str, muertos1: int, muertos2: int, screen, bgimage, font, first: str):
     '''
     Funcion principal, que se apoya en las otras funciones, para dibujar
     la pelea en pantalla y actualizarla a tiempo real. Dibuja sobre el fondo:
@@ -75,6 +82,7 @@ def draw_battle(team1, team2, log, muertos1, muertos2, screen, bgimage, font, fi
         screen: la ventana display del juego (pygame).
         bgimage: la imagen que sera utilizada de fondo (pygame).
         font: la font que usa draw pokemon.
+        first: el nombre del equipo que va primero en el turno
     No retorna, actualiza la pantalla.
     '''
     #dibujo la imagen de fondo
@@ -96,7 +104,7 @@ def draw_battle(team1, team2, log, muertos1, muertos2, screen, bgimage, font, fi
 
     pygame.display.flip()
 
-def draw_winner(winner, screen):
+def draw_winner(winner: object, screen):
     '''
     Esta funcion dibuja la pantalla final que muestra quien gano la pelea.
     Argumentos:
@@ -111,9 +119,19 @@ def draw_winner(winner, screen):
     screen.blit(winner_text, (200, 300))
     pygame.display.flip()
     
-def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
+def batalla_jueguito(team1: Team, team2: Team, effectiveness: dict, screen, bgimage, font):
     '''
-    
+    Es la funcion principal que simula la pelea final. Es una copia de la funcion __fight__ de utils.
+    Esta partida de forma que la pantalla se actualice cada vez que se toca enter, por lo que los turnos se separan
+    en partes a las que llamamos "vueltas". Al terminar la batalla dibuja el texto del ganador.
+    La funcion intenta respetar la logica de batalla planteada por las funciones de utils.
+    Argumentos:
+        team1, team2: objetos de los equipos que van a pelear
+        effectiveness: diccionario de efectividad de los ataques pokemon
+        screen: display pygame sobre el que se muestra la batalla
+        bgimage: imagen de pygame que se usa de fondo durante la pelea
+        font: pygame font usada para algunos textos
+    No retorna, dibuja la batalla en screen.
     '''
     
     inicial_font = pygame.font.Font(None, 60)
@@ -148,9 +166,7 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                 elif event.key == pygame.K_RETURN and battle_started and not advance_turn:
                     advance_turn = True
 
-        
         if battle_started:
-            
             
             if advance_turn:
                 
@@ -239,12 +255,20 @@ def batalla_jueguito(team1, team2, effectiveness, screen, bgimage, font):
                     wait=False
     
         
-def jugar_jueguito(team1, team2, dicc_effectiveness):
-    
+def jugar_jueguito(team1: Team, team2: Team, dicc_effectiveness: dict):
+    '''
+    Funcion que reune la inicializacion de pygame y la simulacion de la batalla para
+    ser llamada en el archivo main.
+    Argumentos:
+        team1, team2: objetos de los equipos que van a pelear.
+        dicc_effectiveness: diccionario que marca la efectividad de los diferentes ataques pokemon para cada tipo.
+    No retorna, simula la pelea en una ventana (display de pygame).
+    '''
     screen, bgimage, font = iniciar_pygame()
     batalla_jueguito(team1, team2, dicc_effectiveness, screen, bgimage, font)
 
 
+#Simulacion de la pelea final
 if __name__ == "__main__":
     pokemon_df = pd.read_csv('data/pokemons.csv')
     moves_df = pd.read_csv('data/moves.csv')
