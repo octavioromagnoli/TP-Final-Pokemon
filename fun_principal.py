@@ -54,6 +54,18 @@ def contrincantes_ronda(lista_de_pokemones: list) -> list:
         equipos_contrincantes.append(Team("Team " + str(i+1), equipo, starter))
     return equipos_contrincantes
 
-def equipo_post_cruza(equipo_nuevo: list[object], starter: int, contador:int, contador_gen: int)->object:
+def equipo_post_cruza(equipo_nuevo: list[object], starter: int, contador:int, contador_gen: int) -> object:
+    """
+    Crea un objeto de equipo despues de los cruces.
+
+    Parametros:
+    equipo_nuevo (list[object]): Lista de objetos Pokemon del equipo.
+    starter (int): Starter del equipo.
+    contador (int): Numero del equipo.
+    contador_gen (int): Numero de generacion.
+
+    Retorna:
+    object: Un objeto de tipo Team que representa el nuevo equipo creado.
+    """
     equipo_armado = Team("Team E"+str(contador_gen+1)+" "+ str(contador-1), equipo_nuevo, starter)
     return equipo_armado

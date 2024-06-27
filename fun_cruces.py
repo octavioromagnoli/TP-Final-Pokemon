@@ -1,9 +1,7 @@
-import numpy as np
 import pandas as pd
 import random
 from tqdm import tqdm
 from fun_crear_pokemon import lista_pokemones, pokediccionario, df_to_dictionary
-from fun_principal import crear_primera_gen, contrincantes_ronda
 from utils.team import Team
 from utils.pokemon import Pokemon
 from utils.combat import __fight__, get_winner
@@ -69,7 +67,7 @@ def add_probabilidad(dic_poke_y_apt: dict):
         dic_poke_y_apt[equipo]['probability'] = dic_poke_y_apt[equipo]['aptitud'] / apt_total
     return dic_poke_y_apt
 
-def select_equipos_padres(lista_de_equipos, lista_de_probabilidades)-> list:
+def select_equipos_padres(lista_de_equipos: list, lista_de_probabilidades: list)-> list:
     '''
     Elije dos padres (distintos) segun sus probabilidades asignadas.
     Argumentos:
@@ -88,43 +86,60 @@ def select_equipos_padres(lista_de_equipos, lista_de_probabilidades)-> list:
         padres_elegidos = random.choices(lista_de_equipos, lista_de_probabilidades, k=2)
     return padres_elegidos
 
-def get_total_stats(pokemon)->int: 
-    """
-    Suma todas las estadisticas que queremos del pokemon
-    Devuelve:
-    int: Suma de estadisticas.
-    """
-    return pokemon.max_hp + pokemon.attack + pokemon.defense + pokemon.sp_attack + pokemon.sp_defense + pokemon.speed
-
 def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon], quants: dict) -> tuple[list, int, dict]:
-    hijos=[] #lista retornada
-    ref_hijos=[] #lista de referencia
+    """
+    Realiza el cruce de dos equipos de pokemones para generar una lista con los pokemones resultantes.
+
+    Parametros:
+    equipo_1 (Team): Primer equipo de pokemones.
+    equipo_2 (Team): Segundo equipo de pokemones.
+    lista_pokemones (list[Pokemon]): Lista de todos los pokemones disponibles para posibles mutaciones.
+    quants (dict): Diccionario que contiene la cantidad de veces que cada pokemon ha aparecido.
+
+    Retorna:
+    tuple: Una tupla que contiene:
+        - hijos (list): Lista con los nombres de los pokemones del nuevo equipo.
+        - starter_nuevo (int): Starter del equipo resultante.
+        - quants (dict): Diccionario actualizado con la cantidad de veces que cada pokemon ha aparecido.
+    """
+    #Se crean las listas qeu se utilizan para crear a los hijos
+    hijos=[] #esta lista sera la que retorne la funcion
+    ref_hijos=[] #lista de referencia que se usa para comprobar que no se repitan pokemones
+
     for i in range(len(equipo_1.pokemons)):
-        action=random.random()
-        if action<0.03: #prob de mutar: 3%
+        action=random.random() #Numero aleatorio entre 0 y 1
+        
+        if action<0.03: #Probabilidad de mutacion: 3%
             while True:
-                hijo=random.choice(lista_pokemones) #elige poke al azar y chequea hasta que no este ya en la lista o no sea legendario
-                if hijo.name not in ref_hijos and hijo.is_legendary==False:    
+                hijo=random.choice(lista_pokemones) #elige un pokemon al azar y comprueba que no este en la lista  
+                if hijo.name not in ref_hijos and hijo.is_legendary==False:    #de referencia y que no sea legendario
                     break
-        elif action<0.515: #prob de elegir el del equipo 1: 48,5%
+        
+        elif action<0.515: #Probabilidad de elegir al pokemon del equipo 1: 48,5%
             hijo=equipo_1.pokemons[i]
-            if hijo.name in ref_hijos:      #si el pokemon del equipo 1 ya esta en la lista
+
+            if hijo.name in ref_hijos:      #Si el pokemon del equipo 1 ya esta en la lista
                 hijo=equipo_2.pokemons[i]   #cambia el elegido al otro
-                if hijo.name in ref_hijos:  #si se da la muy baja probabilidad de que ambos pokemones esten
+
+                if hijo.name in ref_hijos:  #Si se da la muy baja probabilidad de que ambos pokemones ya esten
                     while True:             #se fuerza una mutacion para no repetir
-                        hijo=random.choice(lista_pokemones) #elige poke al azar y chequea hasta que no este ya en la lista o no sea legendario
+                        hijo=random.choice(lista_pokemones)
                         if hijo.name not in ref_hijos and hijo.is_legendary==False:    
                             break
-        else: #prob de elegir el del equipo 2: 48,5%
+
+        else: #Probabilidad de elegir al del equipo 2: 48,5%
             hijo=equipo_2.pokemons[i]
-            if hijo.name in ref_hijos:      #si el pokemon del equipo 2 ya esta en la lista
+
+            if hijo.name in ref_hijos:      #Si el pokemon del equipo 2 ya esta en la lista
                 hijo=equipo_1.pokemons[i]   #cambia el elegido al otro
-                if hijo.name in ref_hijos:  #si se da la muy baja probabilidad de que ambos pokemones esten
+
+                if hijo.name in ref_hijos:  #Si se da la muy baja probabilidad de que ambos pokemones esten
                     while True:             #se fuerza una mutacion para no repetir
-                        hijo=random.choice(lista_pokemones) #elige poke al azar y chequea hasta que no este ya en la lista o no sea legendario
+                        hijo=random.choice(lista_pokemones)
                         if hijo.name not in ref_hijos and hijo.is_legendary==False:    
                             break
-        #agrega el hijo a la lista resultado y el nombre a la referencia
+
+        #Agrega el objeto pokemon a la lista del equipo y su nombre a la lista de referencia
         hijos.append(hijo)
         ref_hijos.append(hijo.name)
 
@@ -143,8 +158,17 @@ def cruces(equipo_1: Team, equipo_2: Team, lista_pokemones: list[Pokemon], quant
         starter_nuevo=starter_2
     return hijos, starter_nuevo, quants
 
-def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness, all_apts):
-    diccionario_con_aptitudes = dicc_apt(lista_equipos, contrincantes, dicc_effectiveness, 50)
+def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness, all_apts, max_epoch):
+    '''
+    La funcion devuelve el mejor equipo como objeto y actualiza la lista de todas las aptitudes.
+    Argumentos:
+        lista_equipos: lista con los equipos como objeto Team.
+        contrincantes: la lista con los contrincantes como objetos Team.
+        dicc_effectiveness: diccionario con la efectividad que tiene cada ataque con cada tipo.
+        all_apts: lista con diccionarios que indican la aptitud de cada equipo.
+        max_epoch: Numero de epocas que se simularon.
+    '''
+    diccionario_con_aptitudes = dicc_apt(lista_equipos, contrincantes, dicc_effectiveness, max_epoch)
     all_apts.append(diccionario_con_aptitudes)
     actual = 0
     ganador = ''
@@ -152,26 +176,3 @@ def mejor_equipo(lista_equipos, contrincantes, dicc_effectiveness, all_apts):
         if diccionario_con_aptitudes[nombre_equipo]['aptitud'] > actual:
             ganador = diccionario_con_aptitudes[nombre_equipo]['eq_obj']
     return ganador, all_apts
-
-def test_team(): 
-    #Funcion inecesaria
-    pokemon_df = pd.read_csv('data/pokemons.csv')
-    moves_df = pd.read_csv('data/moves.csv')
-    effectivenes_df = pd.read_csv('data/effectiveness_chart.csv')
-    dicc_effectiveness = df_to_dictionary(effectivenes_df)
-    pokedex=pokediccionario(pokemon_df, moves_df)
-    pokemones=lista_pokemones(pokedex)
-    aaaaa=['Charizard','Murkrow','Metagross','Dewpider','Heracross','Tsareena']
-    starter=2
-    for i in range(len(aaaaa)):
-        aaaaa[i]=pokemones[pokedex[aaaaa[i]]['data']['pokedex_number']-1]
-    bbbbb=['Weavile', 'Spiritomb', 'Honchkrow', 'Umbreon', 'Houndoom', 'Absol']
-    for i in range(len(bbbbb)):
-        bbbbb[i]=pokemones[pokedex[bbbbb[i]]['data']['pokedex_number']-1]
-    for i in range(6):
-        aaa=Team('aaa',aaaaa,starter)
-        bbb=Team('bbb',bbbbb,i)
-        ganador=get_winner(aaa, bbb, dicc_effectiveness)
-        print(f'starter del rival: {i}\nbatalla {i+1}: {"ganamo :)" if ganador.name==aaa.name else "perdimo :("}')
-
-#test_team()
